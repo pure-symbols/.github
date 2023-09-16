@@ -26,7 +26,7 @@ jobs:
 - name: puller all-branch cron.03:20:10
   steps:
   - !PullRepository
-    name: from gh pure-symbols/.github
+    name: force from gh pure-symbols/.github
     remoteUrl: https://github.com/pure-symbols/.github.git
     syncToChildProject: false
     refs: refs/heads/* refs/tags/*
@@ -34,7 +34,7 @@ jobs:
     force: true
     condition: ALWAYS
   - !PullRepository
-    name: from cb pure-symbols/pure.symbols
+    name: force from cb pure-symbols/pure.symbols
     remoteUrl: https://codeberg.org/pure-symbols/pure.symbols.git
     syncToChildProject: false
     refs: refs/heads/* refs/tags/*
