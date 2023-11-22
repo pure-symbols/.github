@@ -32,7 +32,7 @@ codes.call.trans.ast (\ (ast)
 # list(1, 2, 3 + 1 - 0 * 8, list(0 * 5))
 ~~~
 
-Evaluate a "call"s by use `codes.call.evals` :
+Trans "call"s to "expression" by use `codes.call.expression` then do something :
 
 ~~~ r
 'list (1,2,3+1-4*8,list (3*5))' |> codes.src.call () |> 
@@ -40,10 +40,10 @@ Evaluate a "call"s by use `codes.call.evals` :
 codes.call.trans.ast (\ (ast) 
 	if (ast[[1]] |> identical (`*` |> quote ())) 
 	`[[<-` (ast, 2, value = 0) else ast) |> 
-	codes.call.evals () |> 
+	codes.call.expression () -> xyz ;
 	
-	identical (list(1, 2, 4, list(0))) ;
-# [1] TRUE
+xyz |> eval () |> identical (list(1, 2, 4, list(0))) ; # [1] TRUE
+xyz |> as.character () ; # [1] "list(1, 2, 3 + 1 - 0 * 8, list(0 * 5))"
 ~~~
 
 
