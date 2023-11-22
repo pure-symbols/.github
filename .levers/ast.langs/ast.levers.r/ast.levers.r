@@ -46,7 +46,10 @@ codes.ast.call () ;
 
 # trans asts in ast "list" by f
 codes.ast.deeplapply.ast = 
-\ (ast, f, f.ast.trees = f, f.ast.leaves = f, f.element.all = \ (x) x) 
+\ (ast, f
+	, f.ast.trees = f
+	, f.ast.leaves = f
+	, f.element.all = \ (x) x) 
 ast |> 
 lapply (\ (xs) 
 	if (list.have.nest (xs)) 
