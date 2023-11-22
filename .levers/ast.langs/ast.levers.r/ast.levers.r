@@ -61,3 +61,17 @@ codes.call.trans.ast =
 
 
 
+# parse and quote code string to "call"s
+codes.src.call = 
+\ (src) (src |> 
+	parse (text = _) |> 
+	as.call () |> 
+	as.list ()) [[1]] ;
+
+# evaluate callings
+codes.call.evals = 
+\ (callings) callings |> 
+	as.expression () |> 
+	eval () ;
+
+
