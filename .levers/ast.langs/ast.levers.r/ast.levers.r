@@ -61,7 +61,8 @@ lapply (\ (xs)
 	f.ast.trees () else 
 	if (is.list (xs)) 
 	xs |> f.ast.leaves () else 
-	xs |> f.element.all ()) ;
+	xs |> f.element.all ()) |> 
+f.ast.trees () ;
 
 # trans asts in quoted "call"s by f
 codes.call.trans.ast = 
