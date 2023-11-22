@@ -50,9 +50,15 @@ codes.ast.deeplapply.ast =
 ast |> 
 lapply (\ (xs) 
 	if (list.have.nest (xs)) 
-	xs |> codes.ast.deeplapply.ast (f) else 
+	xs |> 
+	codes.ast.deeplapply.ast (f
+		, f.ast.trees
+		, f.ast.leaves
+		, f.element.all) |> 
+	f.ast.trees () else 
 	if (is.list (xs)) 
-	xs |> f () else xs) ;
+	xs |> f.ast.leaves () else 
+	xs |> f.element.all ()) ;
 
 # trans asts in quoted "call"s by f
 codes.call.trans.ast = 
