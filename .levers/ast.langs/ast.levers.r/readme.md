@@ -27,7 +27,7 @@ Trans string src to "call"s by use `codes.src.call` then do something :
 'list (1,2,3+1-4*8,list (3*5))' |> codes.src.call () |> 
 
 codes.call.trans.ast (\ (ast) 
-	if (ast[[1]] |> identical(`*` |> quote ())) 
+	if (ast[[1]] |> identical (`*` |> quote ())) 
 	`[[<-` (ast, 2, value = 0) else ast) ;
 # list(1, 2, 3 + 1 - 0 * 8, list(0 * 5))
 ~~~
@@ -38,7 +38,7 @@ Evaluate a "call"s by use `codes.call.evals` :
 'list (1,2,3+1-4*8,list (3*5))' |> codes.src.call () |> 
 
 codes.call.trans.ast (\ (ast) 
-	if (ast[[1]] |> identical(`*` |> quote ())) 
+	if (ast[[1]] |> identical (`*` |> quote ())) 
 	`[[<-` (ast, 2, value = 0) else ast) |> 
 	codes.call.evals () |> 
 	
