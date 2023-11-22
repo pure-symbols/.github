@@ -68,10 +68,9 @@ codes.src.call =
 	as.call () |> 
 	as.list ()) [[1]] ;
 
-# evaluate callings
-codes.call.evals = 
-\ (callings) callings |> 
-	as.expression () |> 
-	eval () ;
+# trans "call"s to "expression"
+codes.call.expression = 
+\ (callings, f) callings |> 
+	as.expression () ;
 
 
