@@ -56,7 +56,7 @@ codes.ast.deeplapply.ast =
 codes.call.trans.ast = 
 \ (callings, f = \ (a) a) callings |> 
 	codes.call.ast () |> 
-	codes.ast.deeplapply.ast (\ (ast) if (ast[[1]] |> identical(`*` |> quote ())) `[[<-` (ast, 2, value = 7) else ast) |> 
+	codes.ast.deeplapply.ast (f) |> 
 	codes.ast.call () ;
 
 
