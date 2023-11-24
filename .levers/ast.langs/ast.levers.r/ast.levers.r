@@ -18,7 +18,7 @@ as.call() ;
 
 # to see does a list have a sub list
 list.have.nest <- 
-\ (lst) lst |> 
+\ (lst) is.list(lst) && lst |> 
 lapply (\ (x) is.list(x)) |> 
 unlist () |> any () ;
 
@@ -27,11 +27,13 @@ unlist () |> any () ;
 
 # trans elements in ast "list" by f
 codes.ast.deeplapply.element = 
-\ (ast, f) ast |> 
+\ (ast, f) if (is.list(ast)) 
+ast |> 
 lapply (\ (x) 
 	if (is.list (x)) 
-	codes.ast.deeplapply.element (x, f) else 
-	f (x)) ;
+		codes.ast.deeplapply.element (x, f) else 
+	f (x)) else 
+ast ;
 
 # trans elements in quoted "call"s by f
 codes.call.trans.element = 
@@ -50,6 +52,7 @@ codes.ast.deeplapply.ast =
 	, f.ast.trees = f
 	, f.ast.leaves = f
 	, f.element.all = \ (x) x) 
+if (is.list(ast)) 
 ast |> 
 lapply (\ (xs) 
 	if (list.have.nest (xs)) 
@@ -62,7 +65,8 @@ lapply (\ (xs)
 	if (is.list (xs)) 
 	xs |> f.ast.leaves () else 
 	xs |> f.element.all ()) |> 
-f.ast.trees () ;
+f.ast.trees () else 
+ast ;
 
 # trans asts in quoted "call"s by f
 codes.call.trans.ast = 
