@@ -1,4 +1,6 @@
 
+Tested on [*webr.r-wasm*](https://webr.r-wasm.org/latest).
+
 ## Trans
 
 Trans `*` to `\` by use `codes.call.trans.element` :
