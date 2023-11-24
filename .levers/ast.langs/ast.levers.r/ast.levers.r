@@ -85,3 +85,13 @@ codes.call.expression =
 \ (callings, f) callings |> as.expression () ;
 
 
+
+
+
+# check names did have a name
+codes.names.have = 
+\ (names, namez) 
+names |> 
+lapply (\(n) identical(namez,n)) |> 
+unlist () |> any() ;
+
