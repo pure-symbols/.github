@@ -1,4 +1,6 @@
 
+## Trans
+
 Trans `*` to `\` by use `codes.call.trans.element` :
 
 ~~~ r
@@ -55,6 +57,14 @@ xyz |> eval () |> identical (list(1, 2, 4, list(list(0), 0))) ; # [1] TRUE
 xyz |> as.character () ; # [1] "list(1, 2, 3 + 1 - 0 * 6, list(list(0 * 1), 0 * 5))"
 ~~~
 
+## Names
 
+~~~ r
+c("aaa","bbb","ccc") |> 
+Vectorize( as.symbol ) () |> 
 
+codes.names.have (quote(aaa)) ;
+
+# [1] TRUE
+~~~
 
