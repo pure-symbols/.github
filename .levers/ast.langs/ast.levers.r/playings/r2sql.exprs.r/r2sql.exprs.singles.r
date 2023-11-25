@@ -1,22 +1,22 @@
 
-
-
 { \ (rec.f) \ (x, infixname = x[[1]]) 
 	paste (rec.f(x[[2]])
 		, as.character(infixname)
 		, rec.f(x[[3]]) ) 
-} -> codes.ast.paster.r2sql.infix2 ;
+} -> paster.ast.infix.two ;
 
 { \ (rec.f) \ (x, infixname = x[[1]])
 	paste (as.character(infixname)
 		, rec.f(x[[2]])) 
-} -> codes.ast.paster.r2sql.infix1 ;
+} -> paster.ast.infix.one ;
 
-{ \ (rec.f) \ (x, sp = "")
+{ \ (rec.f) \ (x, joins = "")
 	x |> tail(-1) |> 
 	lapply(rec.f) |> 
-	Reduce (\(a,b) paste (a,sp,b), x=_) 
-} -> codes.ast.paster.r2sql.params.join ;
+	Reduce (\(a,b) paste (a,joins,b), x=_) 
+} -> paster.ast.prefix.params ;
+
+
 
 
 
@@ -28,70 +28,70 @@ codes.ast.deeplapply.ast (\ (a)
 	
 	# infix func 1
 	if ( identical(a[[1]], quote(`!`)) ) 
-	codes.ast.paster.r2sql.infix1 (codes.ast.r2sql.rec) (a) else 
+	paster.ast.infix.one (codes.ast.r2sql.rec) (a) else 
 	
 	
 	# infix func 1 or 2
-	if ( identical(a[[1]], quote(`+`)) 
-		|| identical(a[[1]], quote(`-`)) 
+	if ( identical (a[[1]], quote(`+`)) 
+		|| identical (a[[1]], quote(`-`)) 
 		) 
 	(
-		if (length(a) == 3) codes.ast.paster.r2sql.infix2 (codes.ast.r2sql.rec) (a) else 
-		if (length(a) == 2) codes.ast.paster.r2sql.infix1 (codes.ast.r2sql.rec) (a) else 
+		if (length(a) == 3) paster.ast.infix.two (codes.ast.r2sql.rec) (a) else 
+		if (length(a) == 2) paster.ast.infix.one (codes.ast.r2sql.rec) (a) else 
 		as.character(a) 
 	) else 
 	
 	# infix func 2
-	if ( identical(a[[1]], quote(`*`)) 
-		|| identical(a[[1]], quote(`/`)) 
-		|| identical(a[[1]], quote(`==`)) 
-		|| identical(a[[1]], quote(`!=`)) 
-		|| identical(a[[1]], quote(`>`)) 
-		|| identical(a[[1]], quote(`<`)) 
-		|| identical(a[[1]], quote(`>=`)) 
-		|| identical(a[[1]], quote(`<=`)) 
+	if ( identical (a[[1]], quote(`*`)) 
+		|| identical (a[[1]], quote(`/`)) 
+		|| identical (a[[1]], quote(`==`)) 
+		|| identical (a[[1]], quote(`!=`)) 
+		|| identical (a[[1]], quote(`>`)) 
+		|| identical (a[[1]], quote(`<`)) 
+		|| identical (a[[1]], quote(`>=`)) 
+		|| identical (a[[1]], quote(`<=`)) 
 		) 
-	codes.ast.paster.r2sql.infix2 (codes.ast.r2sql.rec) (a) else 
+	paster.ast.infix.two (codes.ast.r2sql.rec) (a) else 
 	
 	
 	# special prefix/infix func
-	if (identical(a[[1]], quote(pmax))) 
-	a |> codes.ast.paster.r2sql.params.join (codes.ast.r2sql.rec) (",") |> paste("GREATEST","(",... = _,")") else 
-	if (identical(a[[1]], quote(pmin))) 
-	a |> codes.ast.paster.r2sql.params.join (codes.ast.r2sql.rec) (",") |> paste("LEAST","(",... = _,")") else 
-	if (identical(a[[1]], quote(fifelse)) || identical(a[[1]], quote(ifelse))) 
-	a |> codes.ast.paster.r2sql.params.join (codes.ast.r2sql.rec) (",") |> paste("IF","(",... = _,")") else 
-	    
-	if (identical(a[[1]], quote(`&`)) || identical(a[[1]], quote(`&&`))) 
-	a |> codes.ast.paster.r2sql.infix2 (codes.ast.r2sql.rec) (quote(`and`)) else 
-	if (identical(a[[1]], quote(`|`)) || identical(a[[1]], quote(`||`))) 
-	a |> codes.ast.paster.r2sql.infix2 (codes.ast.r2sql.rec) (quote(`or`)) else 
+	if (identical (a[[1]], quote(pmax))) 
+	a |> paster.ast.prefix.params (codes.ast.r2sql.rec) (",") |> paste("GREATEST","(",... = _,")") else 
+	if (identical (a[[1]], quote(pmin))) 
+	a |> paster.ast.prefix.params (codes.ast.r2sql.rec) (",") |> paste("LEAST","(",... = _,")") else 
+	if (identical (a[[1]], quote(fifelse)) || identical (a[[1]], quote(ifelse))) 
+	a |> paster.ast.prefix.params (codes.ast.r2sql.rec) (",") |> paste("IF","(",... = _,")") else 
 	
-	if (identical(a[[1]], quote(`%%`)) ) 
-	a |> codes.ast.paster.r2sql.infix2 (codes.ast.r2sql.rec) (quote(`%`))  else 
-	if (identical(a[[1]], quote(`%/%`)) ) 
-	a |> codes.ast.paster.r2sql.infix2 (codes.ast.r2sql.rec) (quote(`div`))  else 
+	if (identical (a[[1]], quote(`&`)) || identical (a[[1]], quote(`&&`))) 
+	a |> paster.ast.infix.two (codes.ast.r2sql.rec) (quote(`and`)) else 
+	if (identical (a[[1]], quote(`|`)) || identical (a[[1]], quote(`||`))) 
+	a |> paster.ast.infix.two (codes.ast.r2sql.rec) (quote(`or`)) else 
+	
+	if (identical (a[[1]], quote(`%%`))) 
+	a |> paster.ast.infix.two (codes.ast.r2sql.rec) (quote(`%`))  else 
+	if (identical (a[[1]], quote(`%/%`))) 
+	a |> paster.ast.infix.two (codes.ast.r2sql.rec) (quote(`div`))  else 
 	
 	
-	if (identical(a[[1]], quote(`%in%`))) 
-	a |> codes.ast.paster.r2sql.infix2 (codes.ast.r2sql.rec) (quote(`in`))  else 
-	if (identical(a[[1]], quote(c)) || identical(a[[1]], quote(`(`))) 
-	a |> codes.ast.paster.r2sql.params.join (codes.ast.r2sql.rec) (",") |> paste("(",... = _,")") else 
+	if (identical (a[[1]], quote(`%in%`))) 
+	a |> paster.ast.infix.two (codes.ast.r2sql.rec) (quote(`in`))  else 
+	if (identical (a[[1]], quote(c)) || identical(a[[1]], quote(`(`))) 
+	a |> paster.ast.prefix.params (codes.ast.r2sql.rec) (",") |> paste("(",... = _,")") else 
 	
-	if (identical(a[[1]], quote(case_when)))
-	a |> codes.ast.paster.r2sql.params.join (codes.ast.r2sql.rec) ("")|> paste("CASE",... = _,"END") else
-	if (identical(a[[1]], quote(`~`)))
-	a |> codes.ast.paster.r2sql.infix2 (codes.ast.r2sql.rec) (quote(`THEN`)) |> paste ("WHEN",... = _) else 
+	if (identical (a[[1]], quote(case_when)))
+	a |> paster.ast.prefix.params (codes.ast.r2sql.rec) ("")|> paste("CASE",... = _,"END") else
+	if (identical (a[[1]], quote(`~`)))
+	a |> paster.ast.infix.two (codes.ast.r2sql.rec) (quote(`THEN`)) |> paste ("WHEN",... = _) else 
 	
 	
 	
 	# prefix func *
-	if ( is.name(a[[1]]) 
-		&& is.symbol(a[[1]]) 
+	if ( is.name (a[[1]]) 
+		&& is.symbol (a[[1]]) 
 		)
 	a |> 
-	codes.ast.paster.r2sql.params.join (codes.ast.r2sql.rec) (",") |> 
-	paste (as.character(a[[1]]),"(", ... = _ ,")") else 
+	paster.ast.prefix.params (codes.ast.r2sql.rec) (",") |> 
+	paste (as.character (a[[1]]), "(", ... = _ , ")") else 
 	
 	# to str
 	as.character(a) ) ;
@@ -100,13 +100,21 @@ codes.ast.deeplapply.ast (\ (a)
 
 codes.ast.r2sql = 
 \ (ast) ast |> 
-codes.ast.deeplapply.elem (\ (x) if (is.character(x)) paste0 ("'",x,"'") else x) |>
+codes.ast.deeplapply.element (\ (x) if (is.character(x)) paste0 ("'",x,"'") else x) |>
 codes.ast.r2sql.rec () ;
 
 
 codes.src.r2sql.exprs = 
 (\ (rsrc) rsrc |> 
-	codes.str2call() |> 
-	codes.call2ast () |> 
+	codes.src.call() |> 
+	codes.call.ast () |> 
 	codes.ast.r2sql () 
 ) |> Vectorize() ;
+
+
+# # Test
+# 
+# "a+b*c*(d-e+f)*ifelse(x %in% c('xx','yy'), a, list(a,b,case_when (a%%2!=0~1,a%/%2>=9~b,a-3==1~3)))" |> 
+# codes.src.r2sql.exprs () ;
+# #                                                                  a+b*c*(d-e+f)*ifelse(x %in% c('xx','yy'), a, list(a,b,case_when (a%%2!=0~1,a%/%2>=9~b,a-3==1~3))) 
+# # "a + b * c * ( d - e + f ) * IF ( x in ( 'xx' , 'yy' ) , a , list ( a , b , CASE WHEN a % 2 != 0 THEN 1  WHEN a div 2 >= 9 THEN b  WHEN a - 3 == 1 THEN 3 END ) )" 
