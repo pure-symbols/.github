@@ -70,7 +70,8 @@ codes.src.r2sql.exprs =
 			a |> paster.infix2 (quote(`div`)) else 
 			
 			if (identical(a[[1]], quote(`%in%`))) 
-			a |> paster.infix2 (quote(`in`)) else 
+			list (a[[1]], a[[2]], list (quote(c), a[[3]])) |> 
+			paster.infix2 (quote(`in`)) else 
 			if (identical(a[[1]], quote(c)) || identical(a[[1]], quote(`(`))) 
 			a |> paster.params.join (",") |> paste("(",... = _,")") else 
 			
@@ -94,7 +95,7 @@ codes.src.r2sql.exprs =
 	
 	{ \ (a) 
 		a |> 
-		codes.ast.deeplapply.elem (\ (x) 
+		codes.ast.deeplapply.element (\ (x) 
 			if (is.character(x)) paste0 ("'",x,"'") else x) |> 
 		codes.ast.r2sql.rec () 
 	} -> codes.ast.r2sql ;
