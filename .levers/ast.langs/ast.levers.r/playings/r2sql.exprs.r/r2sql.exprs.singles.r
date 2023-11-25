@@ -74,7 +74,8 @@ codes.ast.deeplapply.ast (\ (a)
 	
 	
 	if (identical (a[[1]], quote(`%in%`))) 
-	a |> paster.ast.infix.two (codes.ast.r2sql.rec) (quote(`in`))  else 
+	list (a[[1]], a[[2]], list (quote(c), a[[3]])) |> 
+	paster.ast.infix.two (codes.ast.r2sql.rec) (quote(`in`))  else 
 	if (identical (a[[1]], quote(c)) || identical(a[[1]], quote(`(`))) 
 	a |> paster.ast.prefix.params (codes.ast.r2sql.rec) (",") |> paste("(",... = _,")") else 
 	
@@ -114,7 +115,7 @@ codes.src.r2sql.exprs =
 
 # # Test
 # 
-# "a+b*c*(d-e+f)*ifelse(x %in% c('xx','yy'), a, list(a,b,case_when (a%%2!=0~1,a%/%2>=9~b,a-3==1~3)))" |> 
+# "a+b*c*(d-e+f)*ifelse(x %in% c('xx','yy'), a, list(a,b%in%case_when (a%%2!=0~1,a%/%2>=9~b,a-3==1~3)))" |> 
 # codes.src.r2sql.exprs () ;
-# #                                                                  a+b*c*(d-e+f)*ifelse(x %in% c('xx','yy'), a, list(a,b,case_when (a%%2!=0~1,a%/%2>=9~b,a-3==1~3))) 
-# # "a + b * c * ( d - e + f ) * IF ( x in ( 'xx' , 'yy' ) , a , list ( a , b , CASE WHEN a % 2 != 0 THEN 1  WHEN a div 2 >= 9 THEN b  WHEN a - 3 == 1 THEN 3 END ) )" 
+# #                                                                        a+b*c*(d-e+f)*ifelse(x %in% c('xx','yy'), a, list(a,b%in%case_when (a%%2!=0~1,a%/%2>=9~b,a-3==1~3))) 
+# # "a + b * c * ( d - e + f ) * IF ( x in ( ( 'xx' , 'yy' ) ) , a , list ( a , b in ( CASE WHEN a % 2 != 0 THEN 1  WHEN a div 2 >= 9 THEN b  WHEN a - 3 == 1 THEN 3 END ) ) )" 
