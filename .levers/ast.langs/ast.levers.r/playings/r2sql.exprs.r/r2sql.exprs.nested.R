@@ -94,7 +94,7 @@ codes.src.r2sql.exprs =
 	
 	{ \ (a) 
 		a |> 
-		codes.ast.deeplapply.elem (\ (x) I
+		codes.ast.deeplapply.elem (\ (x) 
 			if (is.character(x)) paste0 ("'",x,"'") else x) |> 
 		codes.ast.r2sql.rec () 
 	} -> codes.ast.r2sql ;
