@@ -135,7 +135,7 @@ callings |>
 as.expression () |> 
 f () ;
 
-# trans "call"s to "charactor" src
+# trans "call"s to "character" src
 codes.call.to.src = 
 \ (callings, f) 
 callings |> 
@@ -157,7 +157,7 @@ codes.call.to.src () ;
 
 
 
-# list all variable names in a codes
+# list all variable names in a codes ast
 codes.ast.ls.variables = 
 \ (ast, f = unique) 
 ast |> 
@@ -167,7 +167,7 @@ unlist () |>
 f () ;
 
 
-# maps all variable names in a codes
+# maps all variable names in a codes ast
 codes.ast.maps.variables = 
 \ (ast, f) 
 ast |> 
@@ -179,5 +179,29 @@ codes.ast.maps.ast (\ (a)
 
 
 
+# list all variable names in a codes src
+codes.src.ls.variables = 
+\ (s
+	, then = \ (a) a |> 
+		lapply (as.character) |> 
+		unlist ()
+	) 
+s |> 
+codes.src.to.call () |> 
+codes.call.to.ast () |> 
+codes.ast.ls.variables () |> 
+then () ;
 
+# list all variable names in a codes src in Vectorize mode
+codes.srcs.ls.variables = 
+\ (ss
+	, then = \ (a) a |> 
+		unlist () |> 
+		unique () |> 
+		lapply (as.character) |> 
+		unlist ()
+	) 
+ss |> 
+Vectorize (codes.src.ls.variables) (list (\ (a) a)) |> 
+then () ;
 

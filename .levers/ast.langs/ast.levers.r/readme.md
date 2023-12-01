@@ -99,7 +99,7 @@ codes.names.have (quote(aax)) ;
 # [1] FALSE
 ~~~
 
-List & Map variables : 
+List & Map variables from calls : 
 
 ~~~ r
 quote (a + 1 - "k" * b %in% list (c, list (d, list (e, foo (f) |> g (h)))) && y || a || c (z, z)) |> 
@@ -112,9 +112,68 @@ list ("a","b","c","d","e","f","h","y","a","z","z") |> Vectorize( as.symbol ) () 
 identical ( xyz |> codes.ast.ls.variables (\ (a) a) ) ; # [1] TRUE
 
 xyz |> 
-codes.ast.maps.variables (\ (x) as.character (x)) |> 
+codes.ast.maps.variables (as.character) |> 
 codes.ast.to.call () ;
 # "a" + 1 - "k" * "b" %in% list("c", list("d", list("e", g(foo("f"), "h")))) && "y" || "a" || c("z", "z")
 ~~~
 
+List & Map variables from src(s) : 
+
+~~~ r
+'a + 1 - "k" * b %in% list (c, list (d, list (e, foo (f) |> g (h)))) && y || a || c (z, z)' |> 
+codes.src.ls.variables () ; # [1] "a" "b" "c" "d" "e" "f" "h" "y" "z"
+
+c ('a + 1 - "k" * b', 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))', 'y || a || c (z, z)') |> 
+codes.srcs.ls.variables () ; # [1] "a" "b" "z" "c" "d" "e" "f" "h" "y"
+
+c ('a + 1 - "k" * b', 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))', 'y || a || c (z, z)') |> 
+codes.srcs.ls.variables (\ (a) a) -> x ;
+c ('a + 1 - "k" * b', 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))', 'y || a || c (z, z)') |> Vectorize (codes.src.ls.variables) (list (\ (a) a)) -> y ;
+
+identical (x, y) ; # [1] TRUE
+
+x ;
+
+## $`a + 1 - "k" * b`
+## $`a + 1 - "k" * b`[[1]]
+## a
+## 
+## $`a + 1 - "k" * b`[[2]]
+## b
+## 
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))`
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))`[[1]]
+## z
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))`[[2]]
+## c
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))`[[3]]
+## d
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))`[[4]]
+## e
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))`[[5]]
+## f
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))`[[6]]
+## h
+## 
+## 
+## $`y || a || c (z, z)`
+## $`y || a || c (z, z)`[[1]]
+## y
+## 
+## $`y || a || c (z, z)`[[2]]
+## a
+## 
+## $`y || a || c (z, z)`[[3]]
+## z
+## 
+## 
+
+
+~~~
 
