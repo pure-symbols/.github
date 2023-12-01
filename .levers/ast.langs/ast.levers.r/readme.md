@@ -72,6 +72,8 @@ codes.src.trans.ast (\ (ast)
 
 ## Names
 
+Check have : 
+
 ~~~ r
 c("aaa","bbb","ccc") |> 
 Vectorize( as.symbol ) () |> 
@@ -96,4 +98,23 @@ codes.names.have (quote(aax)) ;
 
 # [1] FALSE
 ~~~
+
+List & Map variables : 
+
+~~~ r
+quote (a + 1 - "k" * b %in% list (c, list (d, list (e, foo (f) |> g (h)))) && y || a || c (z, z)) |> 
+codes.call.to.ast () -> xyz ;
+
+list ("a","b","c","d","e","f","h","y","z") |> Vectorize( as.symbol ) () |> 
+identical ( xyz |> codes.ast.ls.variables () ) ; # [1] TRUE
+
+list ("a","b","c","d","e","f","h","y","a","z","z") |> Vectorize( as.symbol ) () |> 
+identical ( xyz |> codes.ast.ls.variables (\ (a) a) ) ; # [1] TRUE
+
+xyz |> 
+codes.ast.maps.variables (\ (x) as.character (x)) |> 
+codes.ast.to.call () ;
+# "a" + 1 - "k" * "b" %in% list("c", list("d", list("e", g(foo("f"), "h")))) && "y" || "a" || c("z", "z")
+~~~
+
 
