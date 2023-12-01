@@ -24,7 +24,7 @@
 codes.ast.r2sql.rec = 
 \ (ast) 
 ast |> 
-codes.ast.deeplapply.ast (\ (a) 
+codes.ast.maps.ast (\ (a) 
 	
 	# infix func 1
 	if ( identical(a[[1]], quote(`!`)) ) 
@@ -101,16 +101,16 @@ codes.ast.deeplapply.ast (\ (a)
 
 codes.ast.r2sql = 
 \ (ast) ast |> 
-codes.ast.deeplapply.element (\ (x) if (is.character(x)) paste0 ("'",x,"'") else x) |>
+codes.ast.maps.element (\ (x) if (is.character(x)) paste0 ("'",x,"'") else x) |>
 codes.ast.r2sql.rec () ;
 
 
 codes.src.r2sql.exprs = 
 (\ (rsrc) rsrc |> 
-	codes.src.call() |> 
-	codes.call.ast () |> 
+	codes.src.to.call () |> 
+	codes.call.to.ast () |> 
 	codes.ast.r2sql () 
-) |> Vectorize() ;
+) |> Vectorize () ;
 
 
 # # Test

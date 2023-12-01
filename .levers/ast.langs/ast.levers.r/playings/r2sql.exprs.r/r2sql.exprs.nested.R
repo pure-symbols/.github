@@ -4,7 +4,7 @@ codes.src.r2sql.exprs =
 {
 	codes.ast.r2sql.rec <- 
 	\ (ast) ast |> 
-	codes.ast.deeplapply.ast (\ (a) 
+	codes.ast.maps.ast (\ (a) 
 	{
 		{ \ (x, infixname = x[[1]]) 
 			paste (codes.ast.r2sql.rec(x[[2]])
@@ -95,15 +95,15 @@ codes.src.r2sql.exprs =
 	
 	{ \ (a) 
 		a |> 
-		codes.ast.deeplapply.element (\ (x) 
+		codes.ast.maps.element (\ (x) 
 			if (is.character(x)) paste0 ("'",x,"'") else x) |> 
 		codes.ast.r2sql.rec () 
 	} -> codes.ast.r2sql ;
 	
 	return (
 		rsrc |> 
-		codes.src.call() |> 
-		codes.call.ast () |> 
+		codes.src.to.call() |> 
+		codes.call.to.ast () |> 
 		codes.ast.r2sql () ) ;
 	
 }) |> Vectorize() ;
