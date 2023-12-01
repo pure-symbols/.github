@@ -1,23 +1,23 @@
 # trans quoted "call"s to ast "list"
-codes.call.become.ast.prerec = 
+codes.call.to.ast.prerec = 
 \ (rec.func.name) \ (callings) callings |> 
 as.list () |> lapply (\ (x) 
 	if (is.call(x)) rec.func.name (x) else x) ;
 
-codes.call.become.ast = 
-codes.call.become.ast.prerec (codes.call.become.ast) ;
+codes.call.to.ast = 
+codes.call.to.ast.prerec (codes.call.to.ast) ;
 
 
 # trans ast "list" to quoted "call"s
-codes.ast.become.call.prerec = 
+codes.ast.to.call.prerec = 
 \ (rec.func.name) \ (ast) ast |> 
 lapply (\ (xs) 
 	if (list.have.nest (xs)) rec.func.name (xs) else 
 	if (is.list (xs)) as.call (xs) else xs) |> 
 as.call() ;
 
-codes.ast.become.call = 
-codes.ast.become.call.prerec (codes.ast.become.call) ;
+codes.ast.to.call = 
+codes.ast.to.call.prerec (codes.ast.to.call) ;
 
 
 
@@ -32,7 +32,7 @@ unlist () |> any () ;
 
 
 # trans elements in ast "list" by f
-codes.ast.deepmap.element.prerec = 
+codes.ast.maps.element.prerec = 
 \ (rec.func.name) \ (ast, f) if (is.list(ast)) 
 ast |> 
 lapply (\ (x) 
@@ -41,23 +41,23 @@ lapply (\ (x)
 	f (x)) else 
 f (ast) ;
 
-codes.ast.deepmap.element = 
-codes.ast.deepmap.element.prerec (codes.ast.deepmap.element) ;
+codes.ast.maps.element = 
+codes.ast.maps.element.prerec (codes.ast.maps.element) ;
 
 
 # trans elements in quoted "call"s by f
 codes.call.trans.element = 
 \ (callings, f = \ (x) x) 
 callings |> 
-codes.call.become.ast () |> 
-codes.ast.deepmap.element (f) |> 
-codes.ast.become.call () ;
+codes.call.to.ast () |> 
+codes.ast.maps.element (f) |> 
+codes.ast.to.call () ;
 
 
 
 
 # trans asts in ast "list" by f
-codes.ast.deepmap.ast.prerec = 
+codes.ast.maps.ast.prerec = 
 \ (rec.func.name) \ (ast, f
 	, f.ast.trees = f
 	, f.ast.leaves = f
@@ -78,8 +78,8 @@ lapply (\ (xs)
 f.ast.trees () else 
 ast |> f.element.all () ;
 
-codes.ast.deepmap.ast = 
-codes.ast.deepmap.ast.prerec (codes.ast.deepmap.ast) ;
+codes.ast.maps.ast = 
+codes.ast.maps.ast.prerec (codes.ast.maps.ast) ;
 
 # trans asts in quoted "call"s by f
 codes.call.trans.ast = 
@@ -88,31 +88,31 @@ codes.call.trans.ast =
 	, f.ast.leaves = f
 	, f.element.all = \ (x) x) 
 callings |> 
-codes.call.become.ast () |> 
-codes.ast.deepmap.ast (f
+codes.call.to.ast () |> 
+codes.ast.maps.ast (f
 	, f.ast.trees
 	, f.ast.leaves
 	, f.element.all) |> 
-codes.ast.become.call () ;
+codes.ast.to.call () ;
 
 
 
 # parse and quote code string to "call"s
-codes.src.become.call = 
+codes.src.to.call = 
 \ (src) (src |> 
 	parse (text = _) |> 
 	as.call () |> 
 	as.list ()) [[1]] ;
 
 # trans "call"s to "expression"
-codes.call.become.expression = 
+codes.call.to.expression = 
 \ (callings, f = \ (a) a) callings |> as.expression () |> f () ;
 
 # trans "call"s to "charactor" src
-codes.call.become.src = 
+codes.call.to.src = 
 \ (callings, f) 
 callings |> 
-codes.call.become.expression (as.character) ;
+codes.call.to.expression (as.character) ;
 
 # trans asts in src by f
 codes.src.trans.ast = 
@@ -121,12 +121,12 @@ codes.src.trans.ast =
 	, f.ast.leaves = f
 	, f.element.all = \ (x) x) 
 src |> 
-codes.src.become.call () |> 
+codes.src.to.call () |> 
 codes.call.trans.ast (f
 	, f.ast.trees
 	, f.ast.leaves
 	, f.element.all) |> 
-codes.call.become.src () ;
+codes.call.to.src () ;
 
 
 
