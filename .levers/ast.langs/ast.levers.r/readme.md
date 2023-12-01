@@ -59,6 +59,17 @@ xyz |> eval () |> identical (list(1, 2, 4, list(list(0), 0))) ; # [1] TRUE
 xyz |> as.character () ; # [1] "list(1, 2, 3 + 1 - 0 * 6, list(list(0 * 1), 0 * 5))"
 ~~~
 
+Trans src's ast by f : 
+
+~~~ r
+'list (1,2,3+1-4*8*6,list (list(7*1), 3*5))' |> 
+
+codes.src.trans.ast (\ (ast) 
+	if (ast[[1]] |> identical (`*` |> quote ())) 
+	`[[<-` (ast, 2, value = 0) else ast) ;
+# [1] "list(1, 2, 3 + 1 - 0 * 6, list(list(0 * 1), 0 * 5))"
+~~~
+
 ## Names
 
 ~~~ r
