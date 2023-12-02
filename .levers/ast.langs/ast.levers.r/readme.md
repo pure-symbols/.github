@@ -119,7 +119,7 @@ codes.ast.to.call () ;
 # "a" + 1 - "k" * "b" %in% list("c", list("d", list("e", g(foo("f"), "h")))) && "y" || "a" || c("z", "z")
 ~~~
 
-List variables from src(s) : 
+List variables as str from src(s) : 
 
 ~~~ r
 'a + 1 - "k" * b %in% list (c, list (d, list (e, foo (f) |> g (h)))) && y || a || c (z, z)' |> 
@@ -132,7 +132,7 @@ codes.srcs.ls.variables () ;
 # [1] "a" "b" "z" "c" "d" "e" "f" "h" "y"
 ~~~
 
-List variables from srcs with message : 
+List variables as str from srcs with message : 
 
 ~~~ r
 c ('a + 1 - "k" * b'
