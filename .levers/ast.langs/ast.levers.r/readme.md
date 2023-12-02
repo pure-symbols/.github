@@ -1,6 +1,9 @@
 All tested on [*webr.r-wasm*](https://webr.r-wasm.org/latest).
 
-## Trans
+
+
+## Simple
+
 
 Trans `*` to `\` by use `codes.call.trans.element` :
 
@@ -12,6 +15,7 @@ codes.call.trans.element (\ (a)
 	`/` |> quote () else a) ;
 # list(1, 2, 3 + 1 - 4/8/6, list(3/5))
 ~~~
+
 
 Trans all `*` expression's first argument to `7` by use `codes.call.trans.ast` :
 
@@ -31,32 +35,6 @@ codes.call.trans.ast (\ (ast)
 # list(1, 0, 3 + 1 - 4 * 8 * 6, list(list(7, 0), 0))
 ~~~
 
-Trans string src to "call"s by use `codes.src.to.call` then do something :
-
-~~~ r
-'list (1,2,3+1-4*8*6,list (3*5))' |>
-
-codes.src.to.call () |> 
-
-codes.call.trans.ast (\ (ast) 
-	if (ast[[1]] |> identical (`*` |> quote ())) 
-	`[[<-` (ast, 2, value = 0) else ast) ;
-# list(1, 2, 3 + 1 - 0 * 6, list(0 * 5))
-~~~
-
-Trans "call"s to "expression" by use `codes.call.to.expression` then do something :
-
-~~~ r
-'list (1,2,3+1-4*8*6,list (list(7*1), 3*5))' |> codes.src.to.call () |> 
-codes.call.trans.ast (\ (ast) 
-	if (ast[[1]] |> identical (`*` |> quote ())) 
-	`[[<-` (ast, 2, value = 0) else ast) |> 
-
-codes.call.to.expression () -> xyz ;
-	
-xyz |> eval () |> identical (list(1, 2, 4, list(list(0), 0))) ; # [1] TRUE
-xyz |> as.character () ; # [1] "list(1, 2, 3 + 1 - 0 * 6, list(list(0 * 1), 0 * 5))"
-~~~
 
 Trans src's ast by f : 
 
@@ -90,7 +68,7 @@ codes.ast.to.call () ;
 # "a" + 1 - "k" * "b" %in% list("c", list("d", list("e", g(foo("f"), "h")))) && "y" || "a" || c("z", "z")
 ~~~
 
-List variables as str from src(s) : 
+List variables from src(s) : 
 
 ~~~ r
 'a + 1 - "k" * b %in% 
