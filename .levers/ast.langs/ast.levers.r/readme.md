@@ -1,7 +1,71 @@
+All tested on [*webr.r-wasm*](https://webr.r-wasm.org/latest).
 
+## Trans
 
-这是一些用于对 R 代码操作的基本工具。
+Trans `*` to `\` by use `codes.call.trans.element` :
 
-有的只是操作每个元素、有的只是操作所有 AST ，最基本的需要传入 `list` 类型的 AST 、但是也有支持 `call` 类型或者字符串类型输入的封装。
+~~~ r
+list (1,2,3+1-4*8*6,list (3*5)) |> quote() |> 
 
-可借助 [`looks.rmd`](./looks.rmd) 中的操作示例来观察这些工具。
+codes.call.trans.element (\ (a) 
+	if (a |> identical (`*` |> quote ())) 
+	`/` |> quote () else a) ;
+# list(1, 2, 3 + 1 - 4/8/6, list(3/5))
+~~~
+
+Trans all `*` expression's first argument to `7` by use `codes.call.trans.ast` :
+
+~~~ r
+list (1,2,3+1-4*8*6,list (3*5)) |> quote() |> 
+
+codes.call.trans.ast (\ (ast) 
+	if (ast[[1]] |> identical (`*` |> quote ())) 
+	`[[<-` (ast, 2, value = 7) else ast) ;
+# list(1, 2, 3 + 1 - 7 * 6, list(7 * 5))
+
+list (1,2,3+1-4*8*6,list (list(7),3*5)) |> quote() |> 
+
+codes.call.trans.ast (\ (ast) 
+	if (ast[[1]] |> identical (list |> quote ())) 
+	`[[<-` (ast, 3, value = 0) else ast) ;
+# list(1, 0, 3 + 1 - 4 * 8 * 6, list(list(7, 0), 0))
+~~~
+
+Trans string src to "call"s by use `codes.src.to.call` then do something :
+
+~~~ r
+'list (1,2,3+1-4*8*6,list (3*5))' |>
+
+codes.src.to.call () |> 
+
+codes.call.trans.ast (\ (ast) 
+	if (ast[[1]] |> identical (`*` |> quote ())) 
+	`[[<-` (ast, 2, value = 0) else ast) ;
+# list(1, 2, 3 + 1 - 0 * 6, list(0 * 5))
+~~~
+
+Trans "call"s to "expression" by use `codes.call.to.expression` then do something :
+
+~~~ r
+'list (1,2,3+1-4*8*6,list (list(7*1), 3*5))' |> codes.src.to.call () |> 
+codes.call.trans.ast (\ (ast) 
+	if (ast[[1]] |> identical (`*` |> quote ())) 
+	`[[<-` (ast, 2, value = 0) else ast) |> 
+
+codes.call.to.expression () -> xyz ;
+	
+xyz |> eval () |> identical (list(1, 2, 4, list(list(0), 0))) ; # [1] TRUE
+xyz |> as.character () ; # [1] "list(1, 2, 3 + 1 - 0 * 6, list(list(0 * 1), 0 * 5))"
+~~~
+
+Trans src's ast by f : 
+
+~~~ r
+'list (1,2,3+1-4*8*6,list (list(7*1), 3*5))' |> 
+
+codes.src.trans.ast (\ (ast) 
+	if (ast[[1]] |> identical (`*` |> quote ())) 
+	`[[<-` (ast, 2, value = 0) else ast) ;
+# [1] "list(1, 2, 3 + 1 - 0 * 6, list(list(0 * 1), 0 * 5))"
+~~~
+

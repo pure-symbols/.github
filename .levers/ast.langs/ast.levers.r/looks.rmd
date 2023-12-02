@@ -122,43 +122,59 @@ codes.ast.to.call () ;
 List variables as str from src(s) : 
 
 ~~~ r
-'a + 1 - "k" * b %in% list (c, list (d, list (e, foo (f) |> g (h)))) && y || a || c (z, z)' |> 
-codes.src.ls.variables () ; # [1] "a" "b" "c" "d" "e" "f" "h" "y" "z"
+'a + 1 - "k" * b %in% 
+list (quote (`/`), quote (`!`(F)), quote (!f)
+, c, list (d, list (e, foo (f) |> g (h)))) && 
+y || a || c (`/`, z, z)' |> 
+codes.src.ls.variables () ;
+# [1] "a" "b" "/" "F" "f" "c" "d" "e" "h" "y" "z"
 
 c ('a + 1 - "k" * b'
+, 'quote (quote (`/`), quote (`!`(F)), quote (!f))'
 , 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
-, 'y || a || c (z, z)') |> 
+, 'y || a || c (`/`, z, z)') |> 
 codes.srcs.ls.variables () ;
-# [1] "a" "b" "z" "c" "d" "e" "f" "h" "y"
+# [1] "a" "b" "/" "F" "f" "z" "c" "d" "e" "h" "y"
 ~~~
 
 List variables as str from srcs with message : 
 
 ~~~ r
 c ('a + 1 - "k" * b'
+, 'quote (quote (`/`), quote (`!`(F)), quote (!f))'
 , 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
-, 'y || a || c (z, z)') |> 
+, 'y || a || c (`/`, z, z)') |> 
 Vectorize (codes.src.ls.variables) ( ) ;
 ## $`a + 1 - "k" * b`
 ## [1] "a" "b"
 ## 
+## $`quote (quote (`/`), quote (`!`(F)), quote (!f))`
+## [1] "/" "F" "f"
+## 
 ## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))`
 ## [1] "z" "c" "d" "e" "f" "h"
 ## 
-## $`y || a || c (z, z)`
-## [1] "y" "a" "z"
+## $`y || a || c (`/`, z, z)`
+## [1] "y" "a" "/" "z"
 ## 
 
 
 
 c ('a + 1 - "k" * b'
+, 'quote (quote (`/`), quote (`!`(F)), quote (!f))'
 , 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
-, 'y || a || c (z, z)') |> 
+, 'y || a || c (`/`, z, z)') |> 
 Vectorize (codes.src.ls.variables) ( ) |> unlist () ;
 ##                                       a + 1 - "k" * b1 
 ##                                                    "a" 
 ##                                       a + 1 - "k" * b2 
 ##                                                    "b" 
+##       quote (quote (`/`), quote (`!`(F)), quote (!f))1 
+##                                                    "/" 
+##       quote (quote (`/`), quote (`!`(F)), quote (!f))2 
+##                                                    "F" 
+##       quote (quote (`/`), quote (`!`(F)), quote (!f))3 
+##                                                    "f" 
 ## z %in% list (c, list (d, list (e, foo (f) |> g (h))))1 
 ##                                                    "z" 
 ## z %in% list (c, list (d, list (e, foo (f) |> g (h))))2 
@@ -171,18 +187,21 @@ Vectorize (codes.src.ls.variables) ( ) |> unlist () ;
 ##                                                    "f" 
 ## z %in% list (c, list (d, list (e, foo (f) |> g (h))))6 
 ##                                                    "h" 
-##                                    y || a || c (z, z)1 
+##                               y || a || c (`/`, z, z)1 
 ##                                                    "y" 
-##                                    y || a || c (z, z)2 
+##                               y || a || c (`/`, z, z)2 
 ##                                                    "a" 
-##                                    y || a || c (z, z)3 
+##                               y || a || c (`/`, z, z)3 
+##                                                    "/" 
+##                               y || a || c (`/`, z, z)4 
 ##                                                    "z" 
 
 
 
 c ('a + 1 - "k" * b'
+, 'quote (quote (`/`), quote (`!`(F)), quote (!f))'
 , 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
-, 'y || a || c (z, z)') |> 
+, 'y || a || c (`/`, z, z)') |> 
 Vectorize (codes.src.ls.variables) ( ) |> unlist () |> unique () ;
 # [1] "a" "b" "z" "c" "d" "e" "f" "h" "y"
 ~~~
@@ -191,15 +210,17 @@ List variable as names from srcs with message :
 
 ~~~ r
 c ('a + 1 - "k" * b'
+, 'quote (quote (`/`), quote (`!`(F)), quote (!f))'
 , 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
-, 'y || a || c (z, z)') |> 
+, 'y || a || c (`/`, z, z)') |> 
 Vectorize (codes.src.ls.variables) (list (\ (a) a)) ;
 
 ### or 
 
 c ('a + 1 - "k" * b'
+, 'quote (quote (`/`), quote (`!`(F)), quote (!f))'
 , 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
-, 'y || a || c (z, z)') |> 
+, 'y || a || c (`/`, z, z)') |> 
 codes.srcs.ls.variables (\ (a) a) ;
 
 ### same out: 
@@ -250,8 +271,9 @@ codes.srcs.ls.variables (\ (a) a) ;
 ### but just names only can inner lists. 
 
 c ('a + 1 - "k" * b'
+, 'quote (quote (`/`), quote (`!`(F)), quote (!f))'
 , 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
-, 'y || a || c (z, z)') |> 
+, 'y || a || c (`/`, z, z)') |> 
 Vectorize (codes.src.ls.variables) (list (\ (a) a)) |> unlist () ;
 ## $`a + 1 - "k" * b1`
 ## a
@@ -290,8 +312,9 @@ Vectorize (codes.src.ls.variables) (list (\ (a) a)) |> unlist () ;
 
 
 c ('a + 1 - "k" * b'
+, 'quote (quote (`/`), quote (`!`(F)), quote (!f))'
 , 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
-, 'y || a || c (z, z)') |> 
+, 'y || a || c (`/`, z, z)') |> 
 Vectorize (codes.src.ls.variables) (list (\ (a) a)) |> unlist () |> unique () |> 
 
 identical (list ("a","b","z","c","d","e","f","h","y") |> lapply (as.symbol)) ;
