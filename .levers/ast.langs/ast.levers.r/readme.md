@@ -99,6 +99,8 @@ codes.names.have (quote(aax)) ;
 # [1] FALSE
 ~~~
 
+## Variables
+
 List & Map variables from calls : 
 
 ~~~ r
@@ -117,23 +119,79 @@ codes.ast.to.call () ;
 # "a" + 1 - "k" * "b" %in% list("c", list("d", list("e", g(foo("f"), "h")))) && "y" || "a" || c("z", "z")
 ~~~
 
-List & Map variables from src(s) : 
+List variables from src(s) : 
 
 ~~~ r
 'a + 1 - "k" * b %in% list (c, list (d, list (e, foo (f) |> g (h)))) && y || a || c (z, z)' |> 
 codes.src.ls.variables () ; # [1] "a" "b" "c" "d" "e" "f" "h" "y" "z"
 
-c ('a + 1 - "k" * b', 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))', 'y || a || c (z, z)') |> 
-codes.srcs.ls.variables () ; # [1] "a" "b" "z" "c" "d" "e" "f" "h" "y"
+c ('a + 1 - "k" * b'
+, 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
+, 'y || a || c (z, z)') |> 
+codes.srcs.ls.variables () ;
+# [1] "a" "b" "z" "c" "d" "e" "f" "h" "y"
+~~~
 
-c ('a + 1 - "k" * b', 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))', 'y || a || c (z, z)') |> 
-codes.srcs.ls.variables (\ (a) a) -> x ;
-c ('a + 1 - "k" * b', 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))', 'y || a || c (z, z)') |> Vectorize (codes.src.ls.variables) (list (\ (a) a)) -> y ;
+List variables from src(s) - more : 
 
-identical (x, y) ; # [1] TRUE
+~~~ r
+c ('a + 1 - "k" * b'
+, 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
+, 'y || a || c (z, z)') |> 
+Vectorize (codes.src.ls.variables) ( ) ;
+## $`a + 1 - "k" * b`
+## [1] "a" "b"
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))`
+## [1] "z" "c" "d" "e" "f" "h"
+## 
+## $`y || a || c (z, z)`
+## [1] "y" "a" "z"
+## 
 
-x ;
 
+
+c ('a + 1 - "k" * b'
+, 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
+, 'y || a || c (z, z)') |> 
+Vectorize (codes.src.ls.variables) ( ) |> unlist () ;
+##                                       a + 1 - "k" * b1 
+##                                                    "a" 
+##                                       a + 1 - "k" * b2 
+##                                                    "b" 
+## z %in% list (c, list (d, list (e, foo (f) |> g (h))))1 
+##                                                    "z" 
+## z %in% list (c, list (d, list (e, foo (f) |> g (h))))2 
+##                                                    "c" 
+## z %in% list (c, list (d, list (e, foo (f) |> g (h))))3 
+##                                                    "d" 
+## z %in% list (c, list (d, list (e, foo (f) |> g (h))))4 
+##                                                    "e" 
+## z %in% list (c, list (d, list (e, foo (f) |> g (h))))5 
+##                                                    "f" 
+## z %in% list (c, list (d, list (e, foo (f) |> g (h))))6 
+##                                                    "h" 
+##                                    y || a || c (z, z)1 
+##                                                    "y" 
+##                                    y || a || c (z, z)2 
+##                                                    "a" 
+##                                    y || a || c (z, z)3 
+##                                                    "z" 
+
+
+
+c ('a + 1 - "k" * b'
+, 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
+, 'y || a || c (z, z)') |> 
+Vectorize (codes.src.ls.variables) ( ) |> unlist () |> unique () ;
+# [1] "a" "b" "z" "c" "d" "e" "f" "h" "y"
+
+
+
+c ('a + 1 - "k" * b'
+, 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
+, 'y || a || c (z, z)') |> 
+Vectorize (codes.src.ls.variables) (list (\ (a) a)) ;
 ## $`a + 1 - "k" * b`
 ## $`a + 1 - "k" * b`[[1]]
 ## a
@@ -175,5 +233,53 @@ x ;
 ## 
 
 
+
+c ('a + 1 - "k" * b'
+, 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
+, 'y || a || c (z, z)') |> 
+Vectorize (codes.src.ls.variables) (list (\ (a) a)) |> unlist () ;
+## $`a + 1 - "k" * b1`
+## a
+## 
+## $`a + 1 - "k" * b2`
+## b
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))1`
+## z
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))2`
+## c
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))3`
+## d
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))4`
+## e
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))5`
+## f
+## 
+## $`z %in% list (c, list (d, list (e, foo (f) |> g (h))))6`
+## h
+## 
+## $`y || a || c (z, z)1`
+## y
+## 
+## $`y || a || c (z, z)2`
+## a
+## 
+## $`y || a || c (z, z)3`
+## z
+## 
+
+
+
+c ('a + 1 - "k" * b'
+, 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
+, 'y || a || c (z, z)') |> 
+Vectorize (codes.src.ls.variables) (list (\ (a) a)) |> unlist () |> unique () |> 
+
+identical (list ("a","b","z","c","d","e","f","h","y") |> lapply (as.symbol)) ;
+# [1] TRUE
 ~~~
 
