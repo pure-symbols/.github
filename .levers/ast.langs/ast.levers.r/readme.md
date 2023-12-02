@@ -69,3 +69,42 @@ codes.src.trans.ast (\ (ast)
 # [1] "list(1, 2, 3 + 1 - 0 * 6, list(list(0 * 1), 0 * 5))"
 ~~~
 
+
+## Variables
+
+List & Map variables from calls : 
+
+~~~ r
+quote (a + 1 - "k" * b %in% list (c, list (d, list (e, foo (f) |> g (h)))) && y || a || c (z, z)) |> 
+codes.call.to.ast () -> xyz ;
+
+list ("a","b","c","d","e","f","h","y","z") |> Vectorize( as.symbol ) () |> 
+identical ( xyz |> codes.ast.ls.variables () ) ; # [1] TRUE
+
+list ("a","b","c","d","e","f","h","y","a","z","z") |> Vectorize( as.symbol ) () |> 
+identical ( xyz |> codes.ast.ls.variables (\ (a) a) ) ; # [1] TRUE
+
+xyz |> 
+codes.ast.maps.variables (as.character) |> 
+codes.ast.to.call () ;
+# "a" + 1 - "k" * "b" %in% list("c", list("d", list("e", g(foo("f"), "h")))) && "y" || "a" || c("z", "z")
+~~~
+
+List variables as str from src(s) : 
+
+~~~ r
+'a + 1 - "k" * b %in% 
+list (quote (`/`), quote (`!`(F)), quote (!f)
+, c, list (d, list (e, foo (f) |> g (h)))) && 
+y || a || c (`/`, z, z)' |> 
+codes.src.ls.variables () ;
+# [1] "a" "b" "/" "F" "f" "c" "d" "e" "h" "y" "z"
+
+c ('a + 1 - "k" * b'
+, 'quote (quote (`/`), quote (`!`(F)), quote (!f))'
+, 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
+, 'y || a || c (`/`, z, z)') |> 
+codes.srcs.ls.variables () ;
+# [1] "a" "b" "/" "F" "f" "z" "c" "d" "e" "h" "y"
+~~~
+
