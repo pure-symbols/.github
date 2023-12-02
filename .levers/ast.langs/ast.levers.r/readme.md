@@ -132,7 +132,7 @@ codes.srcs.ls.variables () ;
 # [1] "a" "b" "z" "c" "d" "e" "f" "h" "y"
 ~~~
 
-List variables from src(s) - more : 
+List variables from srcs with message : 
 
 ~~~ r
 c ('a + 1 - "k" * b'
@@ -185,13 +185,25 @@ c ('a + 1 - "k" * b'
 , 'y || a || c (z, z)') |> 
 Vectorize (codes.src.ls.variables) ( ) |> unlist () |> unique () ;
 # [1] "a" "b" "z" "c" "d" "e" "f" "h" "y"
+~~~
 
+List variable as names from srcs with message : 
 
-
+~~~ r
 c ('a + 1 - "k" * b'
 , 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
 , 'y || a || c (z, z)') |> 
 Vectorize (codes.src.ls.variables) (list (\ (a) a)) ;
+
+### or 
+
+c ('a + 1 - "k" * b'
+, 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
+, 'y || a || c (z, z)') |> 
+codes.srcs.ls.variables (\ (a) a) ;
+
+### same out: 
+
 ## $`a + 1 - "k" * b`
 ## $`a + 1 - "k" * b`[[1]]
 ## a
@@ -233,6 +245,9 @@ Vectorize (codes.src.ls.variables) (list (\ (a) a)) ;
 ## 
 
 
+
+### unlist and unique is similar 
+### but just names only can inner lists. 
 
 c ('a + 1 - "k" * b'
 , 'z %in% list (c, list (d, list (e, foo (f) |> g (h))))'
